@@ -1,0 +1,14 @@
+image: pyguerder/bitbucket-pipelines-php74
+
+pipelines:
+  default:
+    - step:
+        script:
+          - service mysql stop
+          - usermod -d /var/lib/mysql/ mysql
+          - service mysql start
+          - mysql -uroot -e "DROP DATABASE IF EXISTS testing; CREATE DATABASE IF NOT EXISTS testing;"
+          - composer install --no-interaction --no-progress --prefer-dist --verbose
+          - cp .env.pipelines. .env.testing
+          - php artisan key:generate  --env=testing
+          - ./vendor/bin/phpunit
